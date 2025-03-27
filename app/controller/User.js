@@ -2,19 +2,33 @@ const userModel = require('../models/user');
 
 
 //create user and save
-exports.userCreate = function(req,res){
+exports.userCreate = async function(req,res){
     
-    if(!req.body.name && !req.body.email){
+    // if(!req.body.name && !req.body.email){
+    if(!req.body){
         res.send("error");
     }
+    else {
+        const user = new userModel(
+            // {
+            // name:req.body.name,
+            // email:req.body.email,
+            // age:req.body.age,
+            // company:req.body.company,
+            // address:req.body.address,
+            // job:req.body.job
+            // }
+            req.body
+        );
 
-    const user = new userModel({
-        name:req.body.name,
-        email:req.body.email
-    });
+        await user.save();
+        // console.log(user.createdAt);
+        // console.log(user.address);
+        res.send("user create and save");
 
-    user.save();
-    res.send("user create and save");
+    }
+
+    
 }
 
 //find all user
@@ -33,7 +47,12 @@ exports.findUserByName = async function(req,res){
 exports.findUserById = async function (req,res) {
     // console.log(req.params);
     const user = await userModel.findById(req.params.id);
-    res.send(user);
+    if(user){
+        res.send(user);
+    }else{
+        res.send("The user you were looking for was not found");
+    }
+    
 }
 
 //update user name
@@ -42,9 +61,11 @@ exports.updateUserName = async function (req,res) {
     // console.log(req.params);
     // console.log("body:");
     // console.log(req.body);
-    const user = await userModel.findByIdAndUpdate(req.params.id,{name:req.body.name,email:req.body.email});
+    // const user = await userModel.findByIdAndUpdate(req.params.id,{name:req.body.name,email:req.body.email});
+    //önce find sonra update edilebilir
+    const user = await userModel.findByIdAndUpdate(req.params.id,req.body);
     if(user){
-        res.send("updated name");
+        res.send("updated name on " + user.updatedAt);
     }else{
         res.send("error");
     }
