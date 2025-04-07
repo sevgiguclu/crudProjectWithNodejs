@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const UserRoute = require('./app/routes/User');
 const CompanyRoute = require('./app/routes/Company');
+const AddressRoute = require('./app/routes/Address');
 
 const cors = require('cors')
 
@@ -13,6 +14,7 @@ app.use(bodyParser.json());//bodyParser get body in post request
 app.use(cors());//for Cors policy error
 app.use('/users',UserRoute);
 app.use('/companies',CompanyRoute);
+app.use('/addresses',AddressRoute);
 
 app.get('/', (req,res) => {
     console.log("get ---");

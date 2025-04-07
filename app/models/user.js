@@ -1,16 +1,11 @@
 const mongoose = require('mongoose');
 
-const addressSchema = new mongoose.Schema({
-    name: String,
-    value: String
-});
-
 const userSchema = new mongoose.Schema({
     name: String,
     email: String,
     age: String,
     company: { type: mongoose.Schema.Types.ObjectId, ref: 'Companies' },
-    address: [addressSchema],
+    address: { type: mongoose.Schema.Types.ObjectId, ref: 'userAddress' },
     job: String
 },
 { timestamps: true }
