@@ -1,31 +1,38 @@
 const userModel = require('../models/user');
 
+const { validationResult} = require('express-validator');
 
 //create user and save
 exports.userCreate = async function(req,res){
     
-    // if(!req.body.name && !req.body.email){
-    if(!req.body){
-        res.send("error");
-    }
-    else {
-        const user = new userModel(
-            // {
-            // name:req.body.name,
-            // email:req.body.email,
-            // age:req.body.age,
-            // company:req.body.company,
-            // address:req.body.address,
-            // job:req.body.job
-            // }
-            req.body
-        );
+    const errors = validationResult(req);
+    // console.log('errors',errors);
+    res.send(errors);
 
-        await user.save();
-        // console.log(user.createdAt);
-        // console.log(user.address);
-        res.send("user create and save");
+    if(!errors){
+        // if(!req.body.name && !req.body.email){
+        if(!req.body){
+            res.send("error");
+        }
+        else {
+            const user = new userModel(
+                // {
+                // name:req.body.name,
+                // email:req.body.email,
+                // age:req.body.age,
+                // company:req.body.company,
+                // address:req.body.address,
+                // job:req.body.job
+                // }
+                req.body
+            );
 
+            await user.save();
+            // console.log(user.createdAt);
+            // console.log(user.address);
+            res.send("user create and save");
+
+        }
     }
 
     
