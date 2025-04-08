@@ -56,7 +56,7 @@ exports.findUserById = async function (req,res) {
 }
 
 //update user name
-exports.updateUserName = async function (req,res) {
+exports.updateUserValues = async function (req,res) {
     // console.log("params:");
     // console.log(req.params);
     // console.log("body:");
@@ -65,7 +65,7 @@ exports.updateUserName = async function (req,res) {
     //önce find sonra update edilebilir
     const user = await userModel.findByIdAndUpdate(req.params.id,req.body);
     if(user){
-        res.send("updated name on " + user.updatedAt);
+        res.send("updated values ");
     }else{
         res.send("error");
     }
@@ -81,7 +81,6 @@ exports.deleteUser = async function (req,res) {
     }
     else{
         res.send("error");
-        
     }
         
 

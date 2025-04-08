@@ -10,6 +10,6 @@ router.get('/',userController.findAllUser);
 router.get('/finduserbyname/:name',userController.findUserByName);
 router.get('/finduserbyid/:id',userController.findUserById);
 router.delete('/deleteuser/:id',userController.deleteUser);
-router.patch('/updateuser/:id',userController.updateUserName);
+router.patch('/updateuser/:id',userController.updateUserValues);
 
 module.exports = router;
