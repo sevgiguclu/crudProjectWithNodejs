@@ -4,14 +4,17 @@ const userController = require('../controller/User');
 const router = express.Router();
 const { check} = require('express-validator');
 
+const oldpass = ['1234','admin'];
 const userValidation = [
     check('name','name cannot be empty').trim().notEmpty(),
     check('email','invalid email').isEmail(),
+    check('password','invalid password').isLength({min:4}).notEmpty(),
+    check('password','old password cannot be used').not().isIn(oldpass),
     check('company','company is required').notEmpty()
 ];
 
 
-router.post('/',userValidation,userController.userCreate);
+router.post('/register',userValidation,userController.userCreate);
 router.get('/',userController.findAllUser);
 router.get('/finduserbyname/:name',userController.findUserByName);
 router.get('/finduserbyid/:id',userController.findUserById);

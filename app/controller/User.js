@@ -6,15 +6,16 @@ const { validationResult} = require('express-validator');
 exports.userCreate = async function(req,res){
     
     const errors = validationResult(req);
-    // console.log('errors',errors);
-    res.send(errors);
+    console.log('errors',errors);
+    // res.send(errors);
 
-    if(!errors){
+    if(errors.isEmpty()){
         // if(!req.body.name && !req.body.email){
         if(!req.body){
             res.send("error");
         }
         else {
+
             const user = new userModel(
                 // {
                 // name:req.body.name,
