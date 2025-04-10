@@ -30,7 +30,8 @@ exports.userCreate = async function(req,res){
             );
 
             const existing = await userModel.find({email:req.params.email});
-            if(existing){
+            console.log(existing.length);
+            if(existing.length !== 0){
                 res.send("There is already a record with this email");
             }
             else{
