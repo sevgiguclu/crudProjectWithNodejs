@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const UserRoute = require('./app/routes/User');
 const CompanyRoute = require('./app/routes/Company');
 const AddressRoute = require('./app/routes/Address');
-const { query, validationResult } = require('express-validator');
+// const { query, validationResult } = require('express-validator');
+const { ValidationError } = require('express-validation');
 
 const cors = require('cors')
 
@@ -18,14 +19,22 @@ app.use('/users',UserRoute);
 app.use('/companies',CompanyRoute);
 app.use('/addresses',AddressRoute);
 
-app.get('/',query('person').notEmpty(), (req,res) => {
-    const result = validationResult(req);
-    console.log("get ---");
-    if (result.isEmpty()) {
-        return res.send(`Hello, ${req.query.person}!`);
+app.use(function(err,req,res,next){
+    if(err instanceof ValidationError){
+        console.log(err);
+        return res.status(err.statusCode).json(err);
     }
-    res.send({ errors: result.array() });
+    return res.status(500).json(err);
 });
+
+// app.get('/',query('person').notEmpty(), (req,res) => {
+//     const result = validationResult(req);
+//     console.log("get ---");
+//     if (result.isEmpty()) {
+//         return res.send(`Hello, ${req.query.person}!`);
+//     }
+//     res.send({ errors: result.array() });
+// });
 
 mongoose.connect('mongodb://localhost:27017/crudProject-nodejs');
 

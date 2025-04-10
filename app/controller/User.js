@@ -1,15 +1,16 @@
 const userModel = require('../models/user');
 
-const { validationResult} = require('express-validator');
+// const { validationResult} = require('express-validator');
 
 //create user and save
 exports.userCreate = async function(req,res){
     
-    const errors = validationResult(req);
-    console.log('errors',errors);
+    // const errors = validationResult(req);
+    // console.log('errors',errors);
     // res.send(errors);
 
-    if(errors.isEmpty()){
+    // if(errors.isEmpty()){
+
         // if(!req.body.name && !req.body.email){
         if(!req.body){
             res.send("error");
@@ -42,7 +43,7 @@ exports.userCreate = async function(req,res){
             
 
         }
-    }
+    // }
 
     
 }
