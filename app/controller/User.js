@@ -28,10 +28,18 @@ exports.userCreate = async function(req,res){
                 req.body
             );
 
-            await user.save();
-            // console.log(user.createdAt);
-            // console.log(user.address);
-            res.send("user create and save");
+            const existing = await userModel.find({email:req.params.email});
+            if(existing){
+                res.send("There is already a record with this email");
+            }
+            else{
+                await user.save();
+                // console.log(user.createdAt);
+                // console.log(user.address);
+                res.send("user create and save");
+            }
+
+            
 
         }
     }
@@ -50,6 +58,7 @@ exports.findUserByName = async function(req,res){
     const user = await userModel.find({name:req.params.name});
     res.send(user);
 }
+
 
 //find user by id
 exports.findUserById = async function (req,res) {
