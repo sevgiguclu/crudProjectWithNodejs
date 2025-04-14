@@ -8,7 +8,11 @@ const AddressRoute = require('./app/routes/Address');
 // const { query, validationResult } = require('express-validator');
 const { ValidationError } = require('express-validation');
 
-const cors = require('cors')
+const cors = require('cors');
+
+require('dotenv').config();
+// console.log('process',process.env);
+// console.log('JWT_SECRET',process.env.JWT_SECRET);
 
 const app = express();
 app.use(express.json());

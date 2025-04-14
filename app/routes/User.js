@@ -5,6 +5,7 @@ const router = express.Router();
 // const {check} = require('express-validator');
 const {validate} = require('express-validation');
 const userValidation = require('../validation/validation');
+const userAuth = require('../auth/auth');
 
 // const oldpass = ['1234','admin'];
 // const registerValidation = [
@@ -19,9 +20,11 @@ const userValidation = require('../validation/validation');
 
 // router.post('/register',registerValidation,userController.userCreate);
 router.post('/register',validate(userValidation.registerValidation,{},{}),userController.userCreate);
+router.post('/login',userController.userLogin);
+
 router.get('/',userController.findAllUser);
 router.get('/finduserbyname/:name',userController.findUserByName);
-router.get('/finduserbyid/:id',userController.findUserById);
+router.get('/finduserbyid/:id',userAuth.authMiddleware,userController.findUserById);//with authatication
 router.delete('/deleteuser/:id',userController.deleteUser);
 router.patch('/updateuser/:id',userController.updateUserValues);
 

@@ -1,8 +1,11 @@
 const userModel = require('../models/user');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 
 // const { validationResult} = require('express-validator');
 
-//create user and save
+//create user, hash user password and save
 exports.userCreate = async function(req,res){
     
     // const errors = validationResult(req);
@@ -29,16 +32,33 @@ exports.userCreate = async function(req,res){
                 req.body
             );
 
-            const existing = await userModel.find({email:req.params.email});
-            console.log(existing.length);
+            const existing = await userModel.find({email:req.body.email});
+            // console.log(existing.length);
             if(existing.length !== 0){
                 res.send("There is already a record with this email");
             }
             else{
-                await user.save();
+                //hash password
+                // var salt = bcrypt.genSalt(10);
+                // console.log(typeof(salt));
+                // const hashedPassword = await bcrypt.hash(req.body.password,salt);
+                // console.log("hashedPass: ",hashedPassword);
+                // user.password = hashedPassword;
+
+                bcrypt.genSalt(10, function(err, salt) {
+                    bcrypt.hash(req.body.password, salt, async function(err, hash) {
+                        // Store hash in your password DB.
+                        user.password = hash;
+                        await user.save();
+                        res.send("user create and save");
+                    });
+                });
+
+
+                // await user.save();
                 // console.log(user.createdAt);
                 // console.log(user.address);
-                res.send("user create and save");
+                // res.send("user create and save");
             }
 
             
@@ -61,7 +81,6 @@ exports.findUserByName = async function(req,res){
     res.send(user);
 }
 
-
 //find user by id
 exports.findUserById = async function (req,res) {
     // console.log(req.params);
@@ -71,7 +90,6 @@ exports.findUserById = async function (req,res) {
     }else{
         res.send("The user you were looking for was not found");
     }
-    
 }
 
 //update user name
@@ -104,3 +122,36 @@ exports.deleteUser = async function (req,res) {
         
 
 }
+
+exports.userLogin = async function(req,res){
+    // dotenv.config();
+    // console.log("env",process.env);
+
+    const findUser = await userModel.findOne({email:req.body.email});
+    if(findUser){
+        const isMatch = await bcrypt.compareSync(req.body.password,findUser.password);
+        if(isMatch){
+            const accessToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.JWT_ACCESS_TOKEN,{expiresIn:'1h'});
+            const refreshToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.JWT_REFRESH_TOKEN,{expiresIn:'1h'});
+
+            res.send({
+                success: true,
+                message:"login succesfully",
+                accessToken,
+                refreshToken
+            });
+        }
+        else{
+            res.send("not login");
+        }
+    }
+    else {
+        res.send("email not saved");
+    }
+
+    // console.log(findUser);
+    // console.log(isMatch);
+    // console.log(findUser.length);
+    
+};
+
