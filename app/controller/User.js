@@ -86,6 +86,7 @@ exports.findUserById = async function (req,res) {
     // console.log(req.params);
     const user = await userModel.findById(req.params.id);
     if(user){
+        user.password = undefined;
         res.send(user);
     }else{
         res.send("The user you were looking for was not found");
@@ -133,12 +134,14 @@ exports.userLogin = async function(req,res){
         if(isMatch){
             const accessToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.JWT_ACCESS_TOKEN,{expiresIn:'1h'});
             const refreshToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.JWT_REFRESH_TOKEN,{expiresIn:'1h'});
-
+            
+            findUser.password = undefined;
             res.send({
                 success: true,
                 message:"login succesfully",
                 accessToken,
-                refreshToken
+                refreshToken,
+                findUser
             });
         }
         else{
