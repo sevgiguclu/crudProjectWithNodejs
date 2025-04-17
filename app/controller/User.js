@@ -1,22 +1,17 @@
 const userModel = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-
 // const { validationResult} = require('express-validator');
 
 //create user, hash user password and save
 exports.userCreate = async function(req,res){
     
     // const errors = validationResult(req);
-    // console.log('errors',errors);
-    // res.send(errors);
-
     // if(errors.isEmpty()){
 
         // if(!req.body.name && !req.body.email){
         if(!req.body){
-            res.send("error");
+            res.status(400).send("error");
         }
         else {
 
@@ -33,7 +28,6 @@ exports.userCreate = async function(req,res){
             );
 
             const existing = await userModel.find({email:req.body.email});
-            // console.log(existing.length);
             if(existing.length !== 0){
                 res.send("There is already a record with this email");
             }
@@ -50,23 +44,15 @@ exports.userCreate = async function(req,res){
                         // Store hash in your password DB.
                         user.password = hash;
                         await user.save();
-                        res.send("user create and save");
+                        res.status(200).send("user create and save");
                     });
                 });
-
-
-                // await user.save();
-                // console.log(user.createdAt);
-                // console.log(user.address);
-                // res.send("user create and save");
             }
 
             
 
         }
-    // }
 
-    
 }
 
 //find all user
@@ -157,4 +143,25 @@ exports.userLogin = async function(req,res){
     // console.log(findUser.length);
     
 };
+
+exports.refreshToken = async function(req,res){
+    const {refreshToken} = req.body;
+    if(!refreshToken) return res.sendStatus(401);
+    jwt.verify(refreshToken,process.env.JWT_REFRESH_TOKEN,function(err, decoded){
+        if(err)
+            res.status(400).send(err);
+        console.log("decoded",decoded);
+        
+        const accessToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_ACCESS_TOKEN,{expiresIn:'1h'});
+        const refreshToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_REFRESH_TOKEN,{expiresIn:'1h'});
+
+        return res.status(200).send({
+            success: true,
+            message:"refreshed token succesfully",
+            accessToken,
+            refreshToken
+        });
+    });
+
+}
 
