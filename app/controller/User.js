@@ -91,7 +91,7 @@ exports.updateUserValues = async function (req,res) {
     if(user){
         res.send("updated values ");
     }else{
-        res.send("error");
+        res.send("not deleted person");
     }
     
 }
