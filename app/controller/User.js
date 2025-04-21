@@ -29,7 +29,7 @@ exports.userCreate = async function(req,res){
 
             const existing = await userModel.find({email:req.body.email});
             if(existing.length !== 0){
-                res.send("There is already a record with this email");
+                res.status(400).send("There is already a record with this email");
             }
             else{
                 //hash password
@@ -58,13 +58,13 @@ exports.userCreate = async function(req,res){
 //find all user
 exports.findAllUser = async function(req,res){
     const users = await userModel.find();
-    res.send(users);
+    res.status(200).send(users);
 }
 
 //find user by name
 exports.findUserByName = async function(req,res){
     const user = await userModel.find({name:req.params.name});
-    res.send(user);
+    res.status(200).send(user);
 }
 
 //find user by id
@@ -73,9 +73,9 @@ exports.findUserById = async function (req,res) {
     const user = await userModel.findById(req.params.id);
     if(user){
         user.password = undefined;
-        res.send(user);
+        res.status(200).send(user);
     }else{
-        res.send("The user you were looking for was not found");
+        res.status(400).send("The user you were looking for was not found");
     }
 }
 
@@ -89,9 +89,9 @@ exports.updateUserValues = async function (req,res) {
     //önce find sonra update edilebilir
     const user = await userModel.findByIdAndUpdate(req.params.id,req.body);
     if(user){
-        res.send("updated values ");
+        res.status(200).send("updated values ");
     }else{
-        res.send("not deleted person");
+        res.status(400).send("not deleted person");
     }
     
 }
@@ -101,10 +101,10 @@ exports.deleteUser = async function (req,res) {
     const user = await userModel.findByIdAndDelete(req.params.id);
     const userList = await userModel.find();
     if(user){
-        res.send(userList);
+        res.status(200).send(userList);
     }
     else{
-        res.send("error");
+        res.status(400).send("error");
     }
         
 
@@ -131,11 +131,11 @@ exports.userLogin = async function(req,res){
             });
         }
         else{
-            res.send("not login");
+            res.status(400).send("not login");
         }
     }
     else {
-        res.send("email not saved");
+        res.status(400).send("email not saved");
     }
 
     // console.log(findUser);
@@ -147,20 +147,24 @@ exports.userLogin = async function(req,res){
 exports.refreshToken = async function(req,res){
     const {refreshToken} = req.body;
     if(!refreshToken) return res.sendStatus(401);
+
     jwt.verify(refreshToken,process.env.JWT_REFRESH_TOKEN,function(err, decoded){
         if(err)
             res.status(400).send(err);
-        console.log("decoded",decoded);
-        
-        const accessToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_ACCESS_TOKEN,{expiresIn:'1h'});
-        const refreshToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_REFRESH_TOKEN,{expiresIn:'1h'});
+        else{
+            console.log("decoded",decoded);
+            const accessToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_ACCESS_TOKEN,{expiresIn:'1h'});
+            const refreshToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_REFRESH_TOKEN,{expiresIn:'1h'});
 
-        return res.status(200).send({
-            success: true,
-            message:"refreshed token succesfully",
-            accessToken,
-            refreshToken
-        });
+            return res.status(200).send({
+                success: true,
+                message:"refreshed token succesfully",
+                accessToken,
+                refreshToken
+            });
+        }
+        
+        
     });
 
 }
