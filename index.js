@@ -17,7 +17,7 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-app.use(bodyParser.json());//bodyParser get body in post request
+app.use(bodyParser.json());//bodyParser get body in post request,Allows us to reach req.body
 app.use(cors());//for Cors policy error
 app.use('/users',UserRoute);
 app.use('/companies',CompanyRoute);

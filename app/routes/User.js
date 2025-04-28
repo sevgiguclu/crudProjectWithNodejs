@@ -21,12 +21,12 @@ const userAuth = require('../auth/auth');
 // router.post('/register',registerValidation,userController.userCreate);
 router.post('/register',validate(userValidation.registerValidation,{},{}),userController.userCreate);
 router.post('/login',userController.userLogin);
-router.get('/',userController.findAllUser);
+router.get('/',userAuth.authMiddleware,userController.findAllUser);
 router.post('/refreshToken',userController.refreshToken);
-router.get('/finduserbyname/:name',userController.findUserByName);
-router.get('/finduserbyid/:id',userController.findUserById);//without authatication
-router.post('/finduserbyidwithauth/:id',userAuth.authMiddleware,userController.findUserById);//with authatication
-router.delete('/deleteuser/:id',userController.deleteUser);
-router.patch('/updateuser/:id',userController.updateUserValues);
+router.get('/finduserbyname/:name',userAuth.authMiddleware,userController.findUserByName);
+router.get('/finduserbyid/:id',userAuth.authMiddleware,userController.findUserById);
+// router.post('/finduserbyidwithauth/:id',userAuth.authMiddleware,userController.findUserById);//with authatication
+router.delete('/deleteuser/:id',userAuth.authMiddleware,userController.deleteUser);
+router.patch('/updateuser/:id',userAuth.authMiddleware,userController.updateUserValues);
 
 module.exports = router;

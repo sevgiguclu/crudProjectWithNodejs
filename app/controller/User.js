@@ -118,8 +118,8 @@ exports.userLogin = async function(req,res){
     if(findUser){
         const isMatch = await bcrypt.compareSync(req.body.password,findUser.password);
         if(isMatch){
-            const accessToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.JWT_ACCESS_TOKEN,{expiresIn:'1h'});
-            const refreshToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.JWT_REFRESH_TOKEN,{expiresIn:'1h'});
+            const accessToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.MY_ACCESS_TOKEN,{ algorithm: 'HS256' },{expiresIn:'1h'});
+            const refreshToken = jwt.sign({email:findUser.email,password:req.body.password},process.env.MY_REFRESH_TOKEN,{ algorithm: 'HS256' },{expiresIn:'1h'});
             
             findUser.password = undefined;
             res.send({
@@ -147,14 +147,14 @@ exports.userLogin = async function(req,res){
 exports.refreshToken = async function(req,res){
     const {refreshToken} = req.body;
     if(!refreshToken) return res.sendStatus(401);
-
-    jwt.verify(refreshToken,process.env.JWT_REFRESH_TOKEN,function(err, decoded){
+    console.log("REFRESH TOKEN İÇİNDEYİM!!!!",refreshToken);
+    jwt.verify(refreshToken,process.env.MY_REFRESH_TOKEN,function(err, decoded){
         if(err)
-            res.status(400).send(err);
+            res.status(401).send(err);
         else{
             console.log("decoded",decoded);
-            const accessToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_ACCESS_TOKEN,{expiresIn:'1h'});
-            const refreshToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.JWT_REFRESH_TOKEN,{expiresIn:'1h'});
+            const accessToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.MY_ACCESS_TOKEN,{ algorithm: 'HS256' },{expiresIn:'1h'});
+            const refreshToken = jwt.sign({email:decoded.email,password:decoded.password},process.env.MY_REFRESH_TOKEN,{ algorithm: 'HS256' },{expiresIn:'1h'});
 
             return res.status(200).send({
                 success: true,
